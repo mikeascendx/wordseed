@@ -35,6 +35,14 @@ export function start() {
     },
   });
 
+  // ---- embed mode: running inside an <iframe> (or ?embed) -> full-bleed,
+  // no page chrome, a self-running showcase. Skip all interactive wiring.
+  const inFrame = (() => { try { return window.self !== window.top; } catch { return true; } })();
+  if (inFrame || new URLSearchParams(location.search).has('embed')) {
+    runEmbed(garden);
+    return;
+  }
+
   // ---- controls ----
   const plant = () => {
     const w = els.input.value;
@@ -130,6 +138,30 @@ export function start() {
   }
 
   els.input.focus({ preventScroll: true });
+}
+
+// ---- embed showcase: full-bleed, self-running, no controls ----
+function runEmbed(garden) {
+  document.body.classList.add('embed');
+  const seeds = share.decodeHash(location.hash);
+  const list = seeds.length ? seeds : ['aurora', 'ember', 'frost'];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduced) {
+    list.forEach((w) => garden.plant(w, { instant: true, silent: true }));
+    return;
+  }
+  // grow the seed words in one at a time, then keep the garden alive by
+  // planting a fresh surprise word every few seconds (ring buffer cycles old)
+  let i = 0;
+  garden.plant(list[i++], { silent: true });
+  const seedTimer = setInterval(() => {
+    if (i < list.length) { garden.plant(list[i++], { silent: true }); return; }
+    clearInterval(seedTimer);
+    setInterval(() => {
+      garden.plant(WORDS[Math.floor(Math.random() * WORDS.length)], { silent: true });
+    }, 7000);
+  }, 1800);
 }
 
 // ---- tiny helpers ----

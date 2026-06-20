@@ -357,3 +357,29 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     transition-duration: .001ms !important;
   }
 }
+
+/* ===================================================================
+   Embed mode — when Wordseed runs inside an <iframe> (e.g. a portfolio
+   card) we drop all the page chrome and let the canvas fill the frame at
+   whatever ratio the host gives it. Toggled by adding `.embed` to <body>.
+   =================================================================== */
+body.embed { background: #06060c; overflow: hidden; }
+body.embed .app { max-width: none; margin: 0; padding: 0; }
+body.embed .head,
+body.embed .controls,
+body.embed .foot,
+body.embed .hint,
+body.embed .toast { display: none !important; }
+body.embed .stage { position: fixed; inset: 0; }
+body.embed .stagewrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+body.embed canvas#stage { width: 100%; height: 100%; }

@@ -24,9 +24,12 @@ export function shareUrl(words) {
 }
 
 // Reflect current garden in the address bar without adding history entries.
+// Wrapped because a sandboxed iframe (opaque origin) throws on replaceState.
 export function syncHash(words) {
-  const h = encodeHash(words);
-  history.replaceState(null, '', h || location.pathname);
+  try {
+    const h = encodeHash(words);
+    history.replaceState(null, '', h || location.pathname);
+  } catch { /* sandboxed embed — address bar isn't ours to touch */ }
 }
 
 // localStorage autosave (best-effort; private mode may throw)
