@@ -1,0 +1,15 @@
+# nothing to build — this is a zero-dependency static site.
+# keep junk out of the repo:
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.vscode/
+.idea/
+
+# local verification artifacts
+.playwright-mcp/
+wordseed-desktop.png
+wordseed-tablet.png
+wordseed-phone.png
+wordseed-phone-card.png
