@@ -7,7 +7,7 @@ plant on an animated nighttime canvas. The trick: every word carries a hidden
 **genome**. The same word always grows the *same* plant, and no two words grow
 alike — because the word itself is the random seed.
 
-> _Live demo:_ **https://mikeascendx.github.io/wordseed/**
+> _Deploys as a static site — see [Deploy](#deploy) (Cloudflare Pages)._
 
 ---
 
@@ -61,6 +61,23 @@ python -m http.server 8080
 
 # or Node
 npx serve .
+```
+
+## Deploy
+
+It's a static site with **no build step**, so any static host works. For
+**Cloudflare Pages**:
+
+1. Connect this GitHub repo in the Cloudflare dashboard
+   (**Workers & Pages → Create → Pages → Connect to Git**).
+2. **Framework preset:** None
+3. **Build command:** _(leave empty)_
+4. **Build output directory:** `/` (the repo root — `index.html` lives there)
+
+Or deploy straight from your machine with Wrangler:
+
+```bash
+npx wrangler pages deploy . --project-name wordseed
 ```
 
 ## Project structure
