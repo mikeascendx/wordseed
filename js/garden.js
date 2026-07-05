@@ -42,7 +42,21 @@ export class Garden {
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.resize();
     this._loop = this._loop.bind(this);
-    requestAnimationFrame(this._loop);
+    this._raf = requestAnimationFrame(this._loop);
+
+    // pause the loop while the tab is hidden (battery); resume in place on
+    // return, never reseed/regrow. Cancel the pending frame on hide so the
+    // held callback can't fire on return and spawn a second, doubled loop.
+    this.hiddenPaused = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+        this.hiddenPaused = true;
+      } else if (this.hiddenPaused) {
+        this.hiddenPaused = false;
+        this._raf = requestAnimationFrame(this._loop);
+      }
+    });
   }
 
   // ---- responsive geometry ----
@@ -192,6 +206,8 @@ export class Garden {
 
   // ---- the frame loop ----
   _loop(t) {
+    if (document.hidden) return; // stop scheduling; visibilitychange resumes us
+
     const c = this.ctx;
     this.breeze = lerp(this.breeze, 0.5 + 0.5 * Math.sin(t * 0.00037), 0.05);
 
@@ -233,7 +249,7 @@ export class Garden {
       drawMeteors(c, this.meteors);
     }
 
-    requestAnimationFrame(this._loop);
+    this._raf = requestAnimationFrame(this._loop);
   }
 
   exportPNG() { share.downloadCanvas(this.canvas, 'wordseed.png'); }
